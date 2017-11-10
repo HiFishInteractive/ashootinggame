@@ -13,6 +13,7 @@ public class ForcedReset : MonoBehaviour
         {
             //... reload the scene
             SceneManager.LoadScene(SceneManager.GetSceneAt(0).name);
+
         }
     }
 }

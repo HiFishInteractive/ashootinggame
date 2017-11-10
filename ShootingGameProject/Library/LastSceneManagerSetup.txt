@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Scenes/Shooter_Main_newWalls.unity
+  isLoaded: 1
+  isActive: 1

@@ -73,7 +73,7 @@ public class FPScontroller : MonoBehaviour {
 			//cause player to jump when jump button pressed. see ApplyGravity
 		}*/
 
-		if (Input.GetButtonDown ("Crouch")) 
+		/*if (Input.GetButtonDown ("Crouch")) 
 		{
 			if (isCrouched == false) {
 				PlayerAvatar.height = PlayerAvatar.height / 2;
@@ -84,7 +84,7 @@ public class FPScontroller : MonoBehaviour {
 				PlayerAvatar.height = PlayerAvatar.height * 2;
 				isCrouched = false;
 			}
-		}
+		}*/
 
 		ApplyGravity ();
 		
