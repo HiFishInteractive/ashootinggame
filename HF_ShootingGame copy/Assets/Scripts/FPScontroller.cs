@@ -11,10 +11,10 @@ public class FPScontroller : MonoBehaviour {
 
 	public GameObject PlayerCamera;
 
-	public GameObject shot;
-	public Transform shotSpawn;
-	public float fireRate;
-	private float nextFire;
+	//public GameObject shot;
+	//public Transform shotSpawn;
+	//public float fireRate;
+	//private float nextFire;
 
 	float moveFB; //front back
 	float moveLR; //left right
