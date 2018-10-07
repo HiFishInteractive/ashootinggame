@@ -6,15 +6,16 @@ using UnityEngine;
 public class shoppingListObjectives : MonoBehaviour
 {
 
-    public List<GameObject> Products = new List<GameObject>();
-    public List<GameObject> targetItems = new List<GameObject>();
-    public List<Text> targetItemText = new List<Text>();
-    public List<GameObject> itemsInBasket = new List<GameObject>();
-    public Text shoppingListText;
-    public Text totalCostText;
-    public Text budgetText;
-    public Text cashOnHandText;
-    ItemStats itemNameList;
+    public List<GameObject> Products = new List<GameObject>(); //list of all products available
+    public List<GameObject> targetItems = new List<GameObject>(); //will be generated list of need products
+    public List<Text> targetItemText = new List<Text>();    //list of text for the targeted items, displayed
+    public List<GameObject> itemsInBasket = new List<GameObject>(); //generated list of items currently in shopping cart
+    public List<bool> gotIt = new List<bool>();  //list of bools that are to be checked off when the required product is obtained
+    public Text shoppingListText; //Just says "Shopping List" I think
+    public Text totalCostText; //updated text of total cost of products in cart
+    public Text budgetText; //generated budget based on target items
+    public Text cashOnHandText; //updated amount of $$ left after cost subtracted from budget
+    ItemStats itemNameList; //referring to the scrip on products.
     public Color targetItemColor;
     public Color targetItemCollectedColor;
     public Color overBudgetColor;
@@ -26,16 +27,29 @@ public class shoppingListObjectives : MonoBehaviour
     float budget;
     float cashOnHand;
     public float budgetMultiplier;
-
-
+    public float collectThemAll;
+    public Animator animFadeOut;
+    public Animator animSphereShopping;
+    public GameObject toyGun;
+    public FPScontroller playerControls;
+    public GameObject PlayerAvatar;
+    public GameObject endingText;
 
     void Start()
     {
+        endingText.SetActive(false);
+        playerControls = PlayerAvatar.GetComponent<FPScontroller>();
         GenerateShoppingList();
         totalCost = 0;
         totalCostText.text = totalCost.ToString();
         cashOnHand = budget;
         cashOnHandText.text = cashOnHand.ToString();
+        animSphereShopping = animSphereShopping.GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        
     }
 
 	public void UpdateCost()
@@ -70,6 +84,7 @@ public class shoppingListObjectives : MonoBehaviour
     {
         int shoppingListLength = targetItems.Count; 
         int basketListLength = itemsInBasket.Count;
+        collectThemAll = 0;
 
         if(basketListLength < 1)
         {
@@ -82,6 +97,7 @@ public class shoppingListObjectives : MonoBehaviour
         for (int j = 0; j < shoppingListLength; j++)
         {
             bool nowGreen = false;
+            
             checkFor = targetItems[j].GetComponent<ItemStats>();
 
             for (int i = 0; i < basketListLength; i++)
@@ -92,15 +108,29 @@ public class shoppingListObjectives : MonoBehaviour
                 {
                     targetItemText[j].color = targetItemCollectedColor;
                     nowGreen = true;
+                    gotIt[j] = true;
                     //return; <<-- supposedly ends the actions of the function. May be good alternative to using "nowGreen"
                 }
                  else if (nowGreen == false)
                  {
                       targetItemText[j].color = targetItemColor;
+                      gotIt[j] = false;
                  }
                  
             }
         }
+
+        collectThemAll = 0;
+
+        for(int k = 0; k < gotIt.Count; k++)
+        {
+            if (gotIt[k] == true)
+            {
+                collectThemAll++;
+            }
+        }
+
+        Debug.Log(collectThemAll);
     }
 
     void GenerateShoppingList()
@@ -124,9 +154,33 @@ public class shoppingListObjectives : MonoBehaviour
         for (int i = 0; i < shoppingListLengthBudget; i++)
         {
             getItemCost = targetItems[i].GetComponent<ItemStats>();
-            budget += getItemCost.itemPrice * budgetMultiplier;
+            budget += Mathf.Ceil(getItemCost.itemPrice * budgetMultiplier);
         }
 
         budgetText.text = budget.ToString();
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("CheckOutTrigger") && collectThemAll == 8)
+        {
+            Debug.Log ("you win!");
+            StartCoroutine(GunRemoval());
+        }
+    }
+
+    IEnumerator GunRemoval() //ending cinematic for when the player beats the game
+    {
+        playerControls.enabled = !playerControls.enabled; //flips the player controls off
+        animSphereShopping.SetTrigger("GunGun"); //activates sphere animation to hide gun removal
+        yield return new WaitForSeconds(1);
+		toyGun.SetActive(false);    //deactivates the gun stuck on the players arm--hidden by the sphere animation
+
+        yield return new WaitForSeconds(.7f);
+        animFadeOut.SetTrigger("FadeOutShopperLevel"); //activates the fade out animation on canvas
+
+        yield return new WaitForSeconds(.5f);
+        endingText.SetActive(true); //activates "thanks for playing" text
+    }
+
 }

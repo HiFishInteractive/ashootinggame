@@ -9,10 +9,15 @@ public class putMeBack : MonoBehaviour {
 	 public bool putBack = false;
 	 public bool dontMove = false;
 	 public int waitTime = 2;
+	 public AudioSource bumpAudio;
 
 	void Start () {
+		bumpAudio = GetComponent<AudioSource>();
+
 		startPos = transform.position;
 		startRot = transform.rotation;
+		StartCoroutine(AudioInitialize());
+		
 	}
 	
 	void Update () {
@@ -21,7 +26,17 @@ public class putMeBack : MonoBehaviour {
 			{
 				putBack = true;
 				StartCoroutine(takeMeHome());	
-			}	
+			}
+
+			if(dontMove == true)
+			{
+				
+				bumpAudio.mute = true;
+			}
+			else
+			{
+				bumpAudio.mute = false;
+			}
 	}
 
 	IEnumerator takeMeHome()
@@ -37,5 +52,12 @@ public class putMeBack : MonoBehaviour {
 			{
 				putBack = false;
 			}
+	}
+	IEnumerator AudioInitialize()
+	{
+		
+		yield return new WaitForSeconds(2);
+		bumpAudio.mute = true;
+
 	}
 }
